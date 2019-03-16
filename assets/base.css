@@ -1,0 +1,6 @@
+/* @import '~normalize.css/normalize.css'; */
+html,body {
+    background-color: #dfdfdf;
+    font-family: 'Quicksand', sans-serif;
+    color: #3a3a3a;
+}
