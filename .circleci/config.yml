@@ -44,6 +44,7 @@ jobs:
       - aws-s3/sync:
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: us-east-1
           from: dist
           to: s3://matthew.engineer
           arguments: |
