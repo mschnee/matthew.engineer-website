@@ -14,13 +14,11 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package-lock.json" }}
-      - run: cp s3.env .env
-      - run: yarn
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+      - run: npm ci
       - save_cache:
           paths:
             - node_modules
-          - v1-dependencies-{{ checksum "package-lock.json" }}
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -49,6 +47,9 @@ jobs:
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           from: dist
           to: s3://matthew.engineer
+          arguments: |
+            --delete \
+            --acl public-read
 workflows:
   version: 2
   build_and_deploy:
