@@ -3,13 +3,13 @@ orbs:
   aws-s3: circleci/aws-s3@1.0.11
 
 defaults: &defaults
+  working_directory: ~/repo/app
   docker:
     - image: circleci/node:12
 
 jobs:
   setup:
     <<: *defaults
-    working_directory: ~/repo
     steps:
       - checkout
       - restore_cache:
@@ -26,7 +26,6 @@ jobs:
             - app
   build:
     <<: *defaults
-    working_directory: ~/repo/app
     steps:
       - attach_workspace:
           at: ~/repo
@@ -39,7 +38,6 @@ jobs:
             - app
   deploy:
     <<: *defaults
-    working_directory: ~/repo/app
     steps:
       - attach_workspace:
           at: ~/repo
