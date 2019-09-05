@@ -1,0 +1,68 @@
+version: 2.1
+orbs:
+  aws-s3: circleci/aws-s3@1.0.11
+
+defaults: &defaults
+  working_directory: ~/repo/app
+  docker:
+    - image: circleci/node:10.16.0
+
+jobs:
+  setup:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package-lock.json" }}
+      - run: cp s3.env .env
+      - run: yarn
+      - save_cache:
+          paths:
+            - node_modules
+          - v1-dependencies-{{ checksum "package-lock.json" }}
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - app
+  build:
+    <<: *defaults
+    working_directory: ~/repo/app
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Build
+          command: npm run build
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - app
+  deploy:
+    <<: *defaults
+    working_directory: ~/repo/app
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - aws-s3/sync:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          from: dist
+          to: s3://matthew.engineer
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - setup:
+          filters:
+            branches:
+              only: master
+      - build:
+          filters:
+            branches:
+              only: master
+          requires:
+            - setup
+      - deploy:
+        requires:
+          - build
