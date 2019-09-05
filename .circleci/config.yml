@@ -3,13 +3,13 @@ orbs:
   aws-s3: circleci/aws-s3@1.0.11
 
 defaults: &defaults
-  working_directory: ~/repo/app
   docker:
-    - image: circleci/node:10.16.0
+    - image: circleci/node:12
 
 jobs:
   setup:
     <<: *defaults
+    working_directory: ~/repo
     steps:
       - checkout
       - restore_cache:
@@ -19,6 +19,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -59,11 +60,8 @@ workflows:
             branches:
               only: master
       - build:
-          filters:
-            branches:
-              only: master
           requires:
             - setup
       - deploy:
-        requires:
-          - build
+          requires:
+            - build
