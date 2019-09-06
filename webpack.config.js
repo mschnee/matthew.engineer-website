@@ -1,7 +1,7 @@
 const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
+const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -41,18 +41,13 @@ module.exports = {
         ]
     },
     plugins: [
-        new CopyWebpackPlugin([
-            { from: 'node_modules/normalize.css/normalize.css', to: 'assets/normalize.css'}
-        ]),
         new HtmlWebpackPlugin({
             template: './assets/index.html'
         }),
-        new HtmlWebpackIncludeAssetsPlugin({
-            assets: [
-                'assets/normalize.css',
-                'assets/base.css'
-            ],
-            append: false
-        })
+        new HtmlWebpackTagsPlugin({ tags: ['assets/normalize.css', 'assets/base.css']}),
+        new CopyWebpackPlugin([
+            { from: 'node_modules/normalize.css/normalize.css', to: 'assets/'},
+            { from: 'assets/base.css', to: 'assets/'},
+        ]),
     ]
 }
